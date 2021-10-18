@@ -18,19 +18,13 @@ namespace SamuraiApp.Data
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.Entity<Samurai>()
-				.HasMany(s=>s.Battles)
-				.WithMany(b=>b.Samurais)
+				.HasMany(s => s.Battles)
+				.WithMany(b => b.Samurais)
 				.UsingEntity<BattleSamurai>
-				()
-
-			modelBuilder.Entity<Quote>(entity=>
-			{
-				entity.HasIndex(e => e.SamuraiId, "IX_Quotes_SamuraiId");
-
-				entity.HasOne(d => d.Samurai)
-						.WithMany(p => p.Quotes)
-						.HasForeignKey(d => d.SamuraiId);
-			});
+					(bs => bs.HasOne<Battle>().WithMany(),
+					bs=>bs.HasOne<Samurai>().WithMany())
+				.Property(bs=>bs.DateJoined)
+				.HasDefaultValueSql("getdate()");			
 		}
 	}
 }
