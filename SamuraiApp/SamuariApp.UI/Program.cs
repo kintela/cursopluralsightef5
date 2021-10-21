@@ -2,6 +2,7 @@
 using SamuraiApp.Data;
 using SamuraiApp.Domain;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SamuariApp.UI
@@ -13,15 +14,74 @@ namespace SamuariApp.UI
 		static void Main(string[] args)
 		{
 			//_context.Database.EnsureCreated();
-			//AddSamuraisByName("shimada", "Okamoto","Kikuchio","Hayashida");
-			//AddVariousTypes();
-			//GetSamurais("After Add:");
-			//QueryFilters();
-			QueryAggregates();
+			QueryAndUpdateBattles_Disconnected();
 			Console.WriteLine("Press any kay...");
 			Console.ReadKey();
 
 		}
+
+		private static void QueryAndUpdateBattles_Disconnected()
+		{
+
+			List<Battle> disconnectedBattles;
+
+			using (var context1=new SamuraiContext())
+			{
+				disconnectedBattles = _context.Battles.ToList();
+			}//context1 is disposed
+
+			disconnectedBattles.ForEach(b=>
+				{
+					b.StartDate = new DateTime(1570, 01, 01);
+					b.EndDate = new DateTime(1570, 01, 01);
+				});
+
+			using (var context2=new SamuraiContext())
+			{
+				context2.UpdateRange(disconnectedBattles);
+				context2.SaveChanges();
+			}
+
+		}
+
+		private static void RetrieveAndDeleteASamurai()
+		{
+			var samurai = _context.Samurais.Find(36);
+
+			_context.Samurais.Remove(samurai);
+
+			_context.SaveChanges();
+
+		}
+
+		private static void MultipleDatabaseOperations()
+		{
+			var samurai = _context.Samurais.FirstOrDefault();
+			samurai.Name += "San";
+
+			_context.Samurais.Add(new Samurai { Name="Shino"});
+
+			_context.SaveChanges();
+
+		}
+		private static void RetrieveAndUpdateMultipleSamurais()
+		{
+			var samurais = _context.Samurais.Skip(1).Take(4).ToList();
+			samurais.ForEach(s => s.Name += "San");
+
+			_context.SaveChanges();
+
+		}
+
+		private static void RetrieveAndUpdateSamurai()
+		{
+			var samurai = _context.Samurais.FirstOrDefault();
+			samurai.Name += "San";
+
+			_context.SaveChanges();
+
+		}
+
 
 		private static void QueryAggregates()
 		{
