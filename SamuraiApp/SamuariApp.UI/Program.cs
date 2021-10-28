@@ -14,10 +14,53 @@ namespace SamuariApp.UI
 		static void Main(string[] args)
 		{
 			//_context.Database.EnsureCreated();
-			QueryAndUpdateBattles_Disconnected();
+			//QueryAndUpdateBattles_Disconnected();
+			//InsertNewSamuraiWithAQuote();
+			//InsertNewSamuraiWithManyQuote();
+			AddQuoteToExistingSamuraiWhileTracked();
 			Console.WriteLine("Press any kay...");
 			Console.ReadKey();
 
+		}
+
+		private static void AddQuoteToExistingSamuraiWhileTracked()
+		{
+			var samurai = _context.Samurais.FirstOrDefault();
+
+			samurai.Quotes.Add(new Quote { 
+				Text="I bet you're happy I've saved you!"
+			});
+			
+			_context.SaveChanges();
+		}
+
+		private static void InsertNewSamuraiWithAQuote()
+		{
+			var samurai = new Samurai
+			{
+				Name = "Kambei Shimada",
+				Quotes = new List<Quote> {
+					new Quote{ Text="I've come to save you"}
+				}
+			};
+
+			_context.Samurais.Add(samurai);
+			_context.SaveChanges();
+		}
+
+		private static void InsertNewSamuraiWithManyQuote()
+		{
+			var samurai = new Samurai
+			{
+				Name = "Kyuzo",
+				Quotes = new List<Quote> {
+					new Quote{ Text="Watch out form my sharp sword!"},
+					new Quote{ Text="I told you to watch out for the sharp sword! Oh well"}
+				}
+			};
+
+			_context.Samurais.Add(samurai);
+			_context.SaveChanges();
 		}
 
 		private static void QueryAndUpdateBattles_Disconnected()
