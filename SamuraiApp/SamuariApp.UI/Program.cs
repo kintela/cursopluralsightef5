@@ -17,21 +17,63 @@ namespace SamuariApp.UI
 			//QueryAndUpdateBattles_Disconnected();
 			//InsertNewSamuraiWithAQuote();
 			//InsertNewSamuraiWithManyQuote();
-			AddQuoteToExistingSamuraiWhileTracked();
+			//AddQuoteToExistingSamuraiWhileTracked();
+			//AddQuoteToExistingSamuraiNotTracked(1);
+			EagerLoadingSamuraiWithQuotes();
 			Console.WriteLine("Press any kay...");
 			Console.ReadKey();
 
 		}
 
-		private static void AddQuoteToExistingSamuraiWhileTracked()
+		private static void EagerLoadingSamuraiWithQuotes()
 		{
-			var samurai = _context.Samurais.FirstOrDefault();
+			//var samuraiWihQuotes = _context.Samurais.Include(s => s.Quotes).ToList();
 
-			samurai.Quotes.Add(new Quote { 
-				Text="I bet you're happy I've saved you!"
+			var filteredInclude = _context.Samurais
+				.Include(s => s.Quotes.Where(q => q.Text.Contains("Thanks"))).ToList();
+		}
+
+		private static void AddQuoteToExistingSamuraiNotTracked(int samuriaId)
+		{
+			var quote = new Quote {Text="Thanks for dinner!", SamuraiId=samuriaId };
+
+			using var newContext = new SamuraiContext();
+
+			newContext.Quotes.Add(quote);
+
+			newContext.SaveChanges();
+		}
+
+		private static void AddQuoteToExistingSamuraiNotTracked3(int samuriaId)
+		{
+			var samurai = _context.Samurais.Find(samuriaId);
+
+			samurai.Quotes.Add(new Quote
+			{
+				Text = "I bet you're happy I've saved you!"
 			});
-			
-			_context.SaveChanges();
+
+			using (var newContext = new SamuraiContext())
+			{
+				newContext.Samurais.Attach(samurai);
+				newContext.SaveChanges();
+			}
+		}
+
+		private static void AddQuoteToExistingSamuraiNotTracked2(int samuriaId)
+		{
+			var samurai = _context.Samurais.Find(samuriaId);
+
+			samurai.Quotes.Add(new Quote
+			{
+				Text = "I bet you're happy I've saved you!"
+			});
+
+			using (var newContext=new SamuraiContext())
+			{
+				newContext.Samurais.Attach(samurai);
+				newContext.SaveChanges();
+			}			
 		}
 
 		private static void InsertNewSamuraiWithAQuote()
