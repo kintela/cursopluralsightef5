@@ -10,13 +10,38 @@ namespace SamuariApp.UI
 	class Program
 	{
 		private static SamuraiContext _context = new SamuraiContext();
+		private static SamuraiContext _contextNT = new SamuraiContextNoTracking();
 
 		static void Main(string[] args)
 		{
 			//_context.Database.EnsureCreated();
-			QueryAndUpdateBattles_Disconnected();
+			GetSamurais("pp");
 			Console.WriteLine("Press any kay...");
 			Console.ReadKey();
+
+		}
+
+		private static void GetSamurais(string text)
+		{
+			var samurais = _contextNT.Samurais
+				.TagWith("ConsoleApp.Program.getSamurais method")
+				.ToList();
+
+			Console.WriteLine($"{text}: Samurai count is {samurais.Count}");
+			foreach (var samurai in samurais)
+			{
+				Console.WriteLine(samurai.Name);
+			}
+		}
+
+		private static void QueryFilters()
+		{
+			//var name = "Sampson";
+			//var samurais = _context.Samurais.Where(s => s.Name ==name).ToList();
+
+			var filter = "J%";
+			var samurais = _contextNT.Samurais
+				.Where(s => EF.Functions.Like(s.Name, filter)).ToList();
 
 		}
 
@@ -89,16 +114,7 @@ namespace SamuariApp.UI
 			
 		}
 
-		private static void QueryFilters()
-		{
-			//var name = "Sampson";
-			//var samurais = _context.Samurais.Where(s => s.Name ==name).ToList();
-
-			var filter = "J%";
-			var samurais = _context.Samurais
-				.Where(s=>EF.Functions.Like(s.Name,filter)).ToList();
-			
-		}
+		
 
 		private static void AddVariousTypes()
 		{
@@ -129,17 +145,6 @@ namespace SamuariApp.UI
 		}
 
 
-		private static void GetSamurais(string text)
-		{
-			var samurais = _context.Samurais
-				.TagWith("ConsoleApp.Program.getSamurais method")
-				.ToList();
-
-			Console.WriteLine($"{text}: Samurai count is {samurais.Count}");
-			foreach (var samurai in samurais)
-			{
-				Console.WriteLine(samurai.Name);
-			}
-		}
+		
 	}
 }
