@@ -19,18 +19,73 @@ namespace SamuariApp.UI
 			//InsertNewSamuraiWithManyQuote();
 			//AddQuoteToExistingSamuraiWhileTracked();
 			//AddQuoteToExistingSamuraiNotTracked(1);
-			EagerLoadingSamuraiWithQuotes();
+			LazyLoadQuotes();
 			Console.WriteLine("Press any kay...");
 			Console.ReadKey();
 
+		}
+
+		private static void LazyLoadQuotes()
+		{
+			var samurai = _context.Samurais.Find(1);
+			var quoteCount = samurai.Quotes.Count();//Esto no funciona sin LL activado
+		
+		}
+		private static void ExplicitLoadQuotes()
+		{
+			//asegurate de que existe algun horse enla bbdd, luego limpia el trackeador del contexto
+			_context.Set<Horse>().Add(new Horse { SamuraiId = 1, Name = "Mr. Ed" });
+			_context.SaveChanges();
+			_context.ChangeTracker.Clear();
+
+			var samurai = _context.Samurais.Find(1);
+			_context.Entry(samurai).Collection(s => s.Quotes).Load();
+			_context.Entry(samurai).Reference(s => s.Horse).Load();
+		}
+
+		private static void ProjectSamuraisWithQuotes()
+		{
+
+			var samuraisAdQuotes = _context.Samurais
+				.Select(s => new {Samurai=s,
+							HappyQuotes=s.Quotes.Where(q=>q.Text.Contains("happy"))})
+				.ToList();
+
+			var firstSamurai = samuraisAdQuotes[0].Samurai.Name += " The Happiest";
+
+		}
+
+
+		private static void ProjectSomeProperties()
+		{
+
+			var someProperties = _context.Samurais.Select(s => new { s.Id, s.Name }).ToList();
+			var idAndNames=_context.Samurais.Select(s => new IdAndName(s.Id, s.Name)).ToList();
+
+
+		}
+		public struct IdAndName
+		{
+			public IdAndName(int id, string name)
+			{
+				Id = id;
+				Name = name;
+			}
+
+			public int Id;
+			public string Name;
 		}
 
 		private static void EagerLoadingSamuraiWithQuotes()
 		{
 			//var samuraiWihQuotes = _context.Samurais.Include(s => s.Quotes).ToList();
 
-			var filteredInclude = _context.Samurais
-				.Include(s => s.Quotes.Where(q => q.Text.Contains("Thanks"))).ToList();
+			//var filteredInclude = _context.Samurais
+			//	.Include(s => s.Quotes.Where(q => q.Text.Contains("Thanks"))).ToList();
+
+
+			var filterPrimaryEntityWithInclude = _context.Samurais.Where(s => s.Name.Contains("Sampson"))
+				.Include(s => s.Quotes).FirstOrDefault();
 		}
 
 		private static void AddQuoteToExistingSamuraiNotTracked(int samuriaId)
