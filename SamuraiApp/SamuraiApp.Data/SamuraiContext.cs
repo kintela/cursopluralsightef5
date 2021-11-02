@@ -29,7 +29,9 @@ namespace SamuraiApp.Data
 					(bs => bs.HasOne<Battle>().WithMany(),
 					bs=>bs.HasOne<Samurai>().WithMany())
 				.Property(bs=>bs.DateJoined)
-				.HasDefaultValueSql("getdate()");			
+				.HasDefaultValueSql("getdate()");
+
+			modelBuilder.Entity<Horse>().ToTable("Horses");
 		}
 	}
 }
