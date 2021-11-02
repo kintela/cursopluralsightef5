@@ -15,10 +15,36 @@ namespace SamuariApp.UI
 		{
 			//_context.Database.EnsureCreated();
 
-			GetHorsesWithSamurai();
+			AddSamuraiWithPayLoadToABattle(2,9);
 
 			Console.WriteLine("Press any kay...");
 			Console.ReadKey();
+
+		}
+
+		private static void AddSamuraiWithPayLoadToABattle()
+		{
+			var battle = _context.Battles.FirstOrDefault();
+			battle.Samurais.Add(new Samurai { Name = "Ramon perez" });
+			_context.SaveChanges();
+
+			var b_s = _context.Set<BattleSamurai>()
+				.SingleOrDefault(bs => bs.BattleId == 1 & bs.SamuraiId == 12);
+
+			if (b_s!=null)
+			{
+				b_s.DateJoined = DateTime.Now;
+				_context.SaveChanges();
+			}
+		}
+
+		private static void AddSamuraiWithPayLoadToABattle(int battleId, int SamuraiId)
+		{
+
+			var b_s = _context.Set<BattleSamurai>().Add(new BattleSamurai { BattleId = battleId, SamuraiId = SamuraiId, DateJoined = DateTime.Now });
+
+			_context.SaveChanges();
+				
 
 		}
 
