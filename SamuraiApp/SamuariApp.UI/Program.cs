@@ -15,13 +15,54 @@ namespace SamuariApp.UI
 		{
 			//_context.Database.EnsureCreated();
 
-			AddSamuraiWithPayLoadToABattle(2,9);
+			ExecuteSomeRawSql();
 
 			Console.WriteLine("Press any kay...");
 			Console.ReadKey();
 
 		}
 
+		private static void ExecuteSomeRawSql()
+		{
+			var samuraiId = 1;
+			var affected=_context.Database
+				.ExecuteSqlInterpolated($"EXEC dbo.DeleteQuotesForSamurai {samuraiId}");
+		}
+
+		private static void QueryUsingFromSqlRawStoredProc()
+		{
+			var text = "dinner";
+			var samurais = _context.Samurais.FromSqlInterpolated(
+				$"EXEC dbo.SamuraisWhoSaidAWord {text}").ToList();
+		}
+
+		private static void QueryUsingRawSqlWithInterploation()
+		{
+			string name = "Okamoto";
+			var samurais = _context.Samurais
+				.FromSqlInterpolated($"select * from samurais where Name='{name}'").Include(s => s.Quotes)
+				.ToList();
+		}
+
+
+		private static void QueryRelatedUsingRawSql()
+		{
+			var samurais = _context.Samurais.FromSqlRaw("select Id,Name from samurais").Include(s=>s.Quotes).ToList();
+		}
+
+		private static void QueryUsingRawSql()
+		{
+			//var samurais = _context.Samurais.FromSqlRaw("select name from samurais").ToList();
+			var samurais = _context.Samurais.FromSqlRaw("select Id,Name, Quotes, Battles, Horse from samurais").ToList();
+		}
+
+		private static void QuerySamuraiBattleStats()
+		{
+			//var stats = _context.SamuraiBattleStats.ToList();
+			var firstStat = _context.SamuraiBattleStats.FirstOrDefault();
+			var sampsonState = _context.SamuraiBattleStats.FirstOrDefault(b => b.Name == "SampsonSan");
+			var findOne = _context.SamuraiBattleStats.Find(2);
+		}
 		private static void AddSamuraiWithPayLoadToABattle()
 		{
 			var battle = _context.Battles.FirstOrDefault();

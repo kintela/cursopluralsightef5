@@ -11,6 +11,9 @@ namespace SamuraiApp.Data
 		public DbSet<Quote> Quotes { get; set; }
 		public DbSet<Battle> Battles { get; set; }
 
+		public DbSet<SamuraiBattleStat> SamuraiBattleStats { get; set; }
+
+
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			optionsBuilder.UseSqlServer("Data Source= (localdb)\\MSSQLLocalDB; Initial catalog=SamuraiAppData")
@@ -22,6 +25,7 @@ namespace SamuraiApp.Data
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			modelBuilder.Entity<SamuraiBattleStat>().HasNoKey().ToView("SamuraiBattleStats");
 			/*modelBuilder.Entity<Samurai>()
 				.HasMany(s => s.Battles)
 				.WithMany(b => b.Samurais)
