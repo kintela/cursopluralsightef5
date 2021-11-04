@@ -32,7 +32,8 @@ namespace SamuraiApp.Data
 		{
 			if (!optionsBuilder.IsConfigured)
 			{
-				optionsBuilder.UseSqlServer("Data Source= (localdb)\\MSSQLLocalDB; Initial catalog=SamuraiTestData");
+				//optionsBuilder.UseSqlServer("Data Source= (localdb)\\MSSQLLocalDB; Initial catalog=SamuraiTestData");
+				optionsBuilder.UseSqlServer("Server=localhost, 1433; Database=SamuraiTestData; User=sa; Password=Windows2021!");
 			}
 			
 				
